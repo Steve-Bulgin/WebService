@@ -1,0 +1,20 @@
+<?php
+/* FileName: config.php
+  * Purpose: Handle db conection for webservice
+  * Revision History
+  * 		Steven Bulgin, 2017.01.06: Created
+  */ 
+?>
+<?php header('Access-Control-Allow-Origin: *'); ?>
+<?php header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept'); ?>
+<?php header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT'); ?>
+<?php
+
+$db_host = "localhost";
+$db_username = "app_acct";  
+$db_pass = "*****"; 
+$db_name = "playerlist";
+  
+mysql_connect("$db_host","$db_username","$db_pass") or die ("Could not connect to mysql");
+mysql_select_db("$db_name") or die ("no database");
+
