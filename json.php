@@ -59,7 +59,7 @@
  			array_push($json_array,$result_array);
  		}
 
- 		echo json_encode($json_array);
+ 		echo "\"players\": ", json_encode($json_array);
 
  	}
 ?>
