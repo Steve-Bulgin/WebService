@@ -38,6 +38,18 @@
 										   (NULL,"'.$f_name.'", "'.$l_name.'")';
 
 	 	$querystr = mysql_query($insert) or trigger_error(mysql_error()."".$insert);
+	 	if ($querystr) {
+	 		$json_array = array("status"=>"200", "message"=>"success: insert");
+
+	 		echo "{\"reponse\": ", json_encode($json_array),"}";
+	 	}
+	 	else {
+	 		$json_array = array("status"=>"500", "message"=>"server error");
+
+	 		echo $querystr;
+	 	}
+
+	 	
 	}
 
  	//Gets all items from db and returns json
@@ -59,7 +71,7 @@
  			array_push($json_array,$result_array);
  		}
 
- 		echo "\"players\": ", json_encode($json_array);
+ 		echo "{ \"players\": ", json_encode($json_array), " }";
 
  	}
 ?>
