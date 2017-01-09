@@ -1,15 +1,6 @@
 <?php
-
-/* FileName: getall.php
- * Purpose: Mysql handler
- * Revision History
- * 		Steven Bulgin, 2017.01.05: Created
- *      Steven Bulgin, 2017.01.06: Servers up a complete list of json in the mysql
- *      Steven Bulgin, 2017.01.06: Spits out all if querystring empty, inserts if names are populated 
- */
-
 	include_once('config.php');
-
+	$request_type = $_SERVER['REQUEST_METHOD'];
 	$urlstr = $_SERVER['QUERY_STRING'];
 	$f_name = isset($_GET['f_name']) ?
 	mysql_real_escape_string($_GET['f_name']) : "";
@@ -22,13 +13,30 @@
 	$ties = isset($_GET['ties']) ?
 	mysql_real_escape_string($_GET['ties']) : "";
 
-	if ($urlstr == "") {
+	if ($request_type == 'GET') {
+		$json_array = array();
 		getAll();
+		
 	}
-	elseif ($urlstr != "") {
+	elseif ($request_type == 'POST') {
 		if ($f_name != "" && $l_name != "" && $wins=="" && $losses == "" && $ties == "") {
-			addPlayer($f_name, $l_name, $wins, $losses, $ties);
+			$json_array = array();
+			addPlayer($f_name, $l_name);
+			$post_array = array("status"=>"200", "message"=>"insert successful");
+			array_push($json_array,$post_array);
+			echo "{ \"respnse\": ", json_encode($json_array), " }";
 		}
+	}
+	elseif ($request_type == 'PUT') {
+		$json_array = array("status"=>"200", "message"=>"PUT");
+		echo "{ \"respnse\": ", json_encode($json_array), " }";
+	}
+	elseif ($request_type == 'DELETE') {
+		$json_array = array();
+		deletePlayer($f_name,$l_name);
+		$delete_array = array("status"=>"200", "message"=>"DELETE successful");
+		array_push($json_array,$delete_array);
+		echo "{ \"respnse\": ", json_encode($json_array), " }";
 	}
 
 	//Handles insert
@@ -37,22 +45,10 @@
 		$insert = 'INSERT INTO `tbl_players`(`id`, `f_name`, `l_name`) VALUES 
 										   (NULL,"'.$f_name.'", "'.$l_name.'")';
 
-	 	$querystr = mysql_query($insert) or trigger_error(mysql_error()."".$insert);
-	 	if ($querystr) {
-	 		$json_array = array("status"=>"200", "message"=>"success: insert");
-
-	 		echo "{\"reponse\": ", json_encode($json_array),"}";
-	 	}
-	 	else {
-	 		$json_array = array("status"=>"500", "message"=>"server error");
-
-	 		echo $querystr;
-	 	}
-
-	 	
+	 	$querystr = mysql_query($insert) or trigger_error(mysql_error()."".$insert);	 	
 	}
 
- 	//Gets all items from db and returns json
+  	//Gets all items from db and returns json
  	function getAll() {
 
 
@@ -67,11 +63,13 @@
  			$result_array['wins'] = $result['wins'];
  			$result_array['losses'] = $result['losses'];
  			$result_array['ties'] = $result['ties'];
-
  			array_push($json_array,$result_array);
  		}
+ 		echo "{ \"players\": ", json_encode($json_array)," }";
+ 	}
 
- 		echo "{ \"players\": ", json_encode($json_array), " }";
-
+ 	function deletePlayer($f_name, $l_name) {
+ 		$delete = 'DELETE FROM `tbl_players` WHERE f_name="'.$f_name.'" AND l_name="'.$l_name.'"';
+ 		$querystr = mysql_query($delete) or trigger_error(mysql_error()."".$selectall);
  	}
 ?>
